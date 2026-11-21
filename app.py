@@ -588,12 +588,12 @@ def generate_dynamic_slides_with_gemini(markdown_data: str, brand: str, title: s
         count_rule = f"Generate exactly {slide_count} slides."
 
     prompt = f"""
-You are an expert presentation designer and data visualization architect for PPT Master.
-You turn raw spreadsheets into high-end, executive PowerPoint presentations.
+You are an expert executive presentation designer and data visualization architect for PPT Master.
+You turn raw spreadsheets into high-end, world-class executive PowerPoint presentations.
 
 Input Data (extracted from Excel):
 ---
-{markdown_data[:12000]}
+{markdown_data[:14000]}
 ---
 
 Target Deck Configuration:
@@ -604,25 +604,47 @@ Target Deck Configuration:
 {brand_instructions}
 - Dynamic Copyright text: "{copyright_line}"
 
-CRITICAL SLIDE STRUCTURE REQUIREMENT (COVER & THANK YOU):
-- Slide 1 MUST BE the Front Page / Cover Slide: Pure black background (#000000), large UPPERCASE title in pure white (#FFFFFF), subtitle/kicker in grey (#666567) or accent orange (#F58220), date/author in footer.
-- Content Slides (middle slides): Pure white background (#FFFFFF), category kicker in accent orange (#F58220), title in black (#000000), clear data cards/tables/charts, and dynamic copyright line in footer.
-- The Final Slide MUST BE the Closing / Thank You Slide: Pure black background (#000000), large "THANK YOU" headline in pure white (#FFFFFF), contact/corporate info in grey (#666567), and dynamic copyright line in footer.
+CRITICAL SLIDE ARCHITECTURE & DESIGN FREEDOM:
+- Slide 1 MUST BE the Cover / Front Page:
+  * Pure black background (#000000).
+  * Category / kicker in accent orange (#F58220) or light grey (#AAA9A7).
+  * Hero deck title in bold white (#FFFFFF, font-size 44-52).
+  * Subtitle / period in grey (#666567 or #CBD5E1, font-size 18-22).
+  * Minimalist, elegant layout.
 
-CRITICAL RULES FOR SVG GENERATION:
+- The Final Slide MUST BE the Closing / Thank You Slide:
+  * Pure black background (#000000).
+  * Large "THANK YOU" headline in pure white (#FFFFFF, font-size 52-60).
+  * Subtitle / Corporate contact info in grey (#AAA9A7, font-size 16-18).
+
+- Content Slides (All Middle Slides):
+  * Pure white background (#FFFFFF).
+  * YOU HAVE COMPLETE CREATIVE FREEDOM to select the most compelling visual representations based directly on what the data demands:
+    - If the data has time series / monthly / quarterly trends: create vector Bar Charts, Column Charts, or Trajectory Comparisons.
+    - If the data has portfolio breakdown / rankings / product metrics: create structured Data Tables, Matrix Grids, or Multi-column Comparison Cards.
+    - If the data has top-level executive figures: create KPI Stat Grids (3-4 high-impact metric cards with delta indicators).
+    - If the data has stages / conversions / collections: create Funnels, Progress Tracks, or Waterfall Cards.
+  * The only strict requirement is: DO NOT output plain boring text bullets. Transform the data into real vector visual graphics (using SVG <rect>, <line>, <circle>, <polygon>, <text>).
+
+REFERENCE VISUAL PATTERNS (Techniques for drawing rich graphics in SVG):
+- SVG Bar Chart Pattern: Use container <rect>, horizontal reference <line> gridlines with Y-axis text labels, vertical <rect rx="3"> for data bars, and clear X-axis category labels with numbers on top of bars.
+- SVG Data Table Pattern: Use an executive dark header <rect>, clean column headers, subtle horizontal divider <line> rules, alternating/clean data rows, and bold totals row.
+- SVG KPI Card Pattern: Use rounded container <rect rx="8">, prominent metric values (font-size 38-48), small category badges, and delta percentage tags.
+- SVG Progress Bar / Track Pattern: Use a background track <rect fill="#E2E8F0" rx="4"/> and an overlay fill <rect fill="#F58220" rx="4"/> reflecting the percentage.
+
+CRITICAL RULES FOR SVG GENERATION & COMPILER COMPLIANCE:
 1. Every slide MUST be an independent, fully valid XML <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" lang="en-US">...</svg>.
-2. Do NOT use CSS filters like filter="drop-shadow(...)". Use clean solid fills and 1px hairlines instead.
+2. Do NOT use CSS filters like filter="drop-shadow(...)".
 3. Do NOT use HTML tags. Use ONLY valid SVG: <rect>, <text>, <tspan>, <line>, <g>, <circle>, <polygon>, <defs>, <linearGradient>, <image>.
-4. NEVER use CSS <style> blocks or `class="..."` attributes. Write all styles as direct SVG presentation attributes (e.g. fill="#000000", font-size="24", font-weight="500", letter-spacing="1").
-5. NEVER use these unsupported text attributes — they will break DrawingML export: class, text-transform, line-height, text-align, white-space, word-spacing, word-break, text-rendering, text-shadow, font-kerning, font-variant, writing-mode.
-6. TEXT WRAPPING — SVG has no auto wrap. You MUST manually split long text into multiple <text> elements, each on its own y coordinate spaced 28-36px apart. Never let a single text element exceed ~80 characters or run past x=1180.
-7. SAFE ZONE & TOP-RIGHT LOGO — The brand logo will be placed in the TOP-RIGHT corner (x=1090 to x=1260, y=28 to y=67). Keep all your slide titles and shapes clear of x >= 1060 when y <= 90!
-8. FONT & COLOR COMPLIANCE — Font must be Poppins (with Arial, sans-serif fallback). Color scheme: pure black #000000, pure white #FFFFFF, grey #666567, hairlines #AAA9A7, accent orange #F58220 (≤20% per slide).
-9. SPACING — leave at least 40px between each content block. Do not stack elements with less than 24px gap.
-10. ONE COLUMN layouts are safer than two-column for data-heavy slides — use two columns only when each column has 5 or fewer short lines.
-11. Extract the REAL numbers, KPIs, property names, and dates from the provided data.
-12. {count_rule}
-13. Provide the output as a valid JSON array of objects:
+4. NEVER use CSS <style> blocks or `class="..."` attributes. Write all styles as direct SVG presentation attributes (e.g. fill="#000000", font-size="24", font-weight="bold", letter-spacing="1").
+5. NEVER use nested <svg> elements. All shapes must reside directly under the root <svg> or inside <g> groups.
+6. NEVER use unsupported text attributes — they break DrawingML export: class, text-transform, line-height, text-align, white-space, word-spacing, word-break, text-rendering, text-shadow, font-kerning, font-variant, writing-mode.
+7. TEXT WRAPPING — SVG has no auto wrap. You MUST manually split long text into multiple <text> elements, each on its own y coordinate spaced 24-32px apart. Never let text run past x=1180.
+8. SAFE ZONE & TOP-RIGHT LOGO — The brand logo will be placed in the TOP-RIGHT corner (x=1090 to x=1260, y=28 to y=67). Keep all slide titles, headers, and shapes clear of x >= 1060 when y <= 90!
+9. FONT & COLOR COMPLIANCE — Font must be Poppins (with Arial, sans-serif fallback). Color scheme: pure black #000000, pure white #FFFFFF, grey #666567, hairlines #AAA9A7 / #E2E8F0, accent orange #F58220.
+10. Extract the REAL numbers, KPIs, property names, and dates from the provided data.
+11. {count_rule}
+12. Provide the output as a valid JSON array of objects:
 [
   {{
     "slide_number": 1,
