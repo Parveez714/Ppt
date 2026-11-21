@@ -489,6 +489,16 @@ def sanitize_svg(svg_content: str) -> str:
         svg_content = re.sub(rf'\s*{prop}="[^"]*"', '', svg_content)
         svg_content = re.sub(rf'{prop}\s*:\s*[^;}}\"]+;?\s*', '', svg_content)
 
+    # Normalize stroke-dasharray: PPT Master compiler requires at least two numbers (e.g. "4 4", not lone "4")
+    def _fix_dasharray(m):
+        val = m.group(1).strip()
+        parts = [p.strip() for p in re.split(r'[\s,]+', val) if p.strip()]
+        if len(parts) == 1 and parts[0].replace('.', '', 1).isdigit():
+            return f'stroke-dasharray="{parts[0]} {parts[0]}"'
+        return m.group(0)
+
+    svg_content = re.sub(r'stroke-dasharray="([^"]+)"', _fix_dasharray, svg_content)
+
     # In-line CSS class declarations and clean classes
     try:
         from bs4 import BeautifulSoup
