@@ -540,6 +540,10 @@ def sanitize_svg(svg_content: str) -> str:
     except Exception:
         pass
 
+    # CRITICAL: BeautifulSoup and html.parser URL-encode '#' in attribute values to '%23'
+    # PPT Master strict XML paint parser expects raw hex colors (e.g. #000000, not %23000000)!
+    svg_content = svg_content.replace('%23', '#')
+
     # CRITICAL: BeautifulSoup lowercases tag attributes (turns viewBox into viewbox),
     # but PPT Master strict XML parser strictly requires camelCase viewBox!
     svg_content = svg_content.replace('viewbox=', 'viewBox=')
