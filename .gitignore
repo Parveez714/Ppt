@@ -192,3 +192,7 @@ skills/ppt-master/templates/layouts/*/exports/
 
 # Personal template library (preserved across repository updates)
 /skills/ppt-master/templates/local/
+
+.venv/
+*.pptx
+*.xlsx
