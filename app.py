@@ -530,9 +530,13 @@ def sanitize_svg(svg_content: str) -> str:
             if not text_tag.has_attr('font-family'):
                 text_tag['font-family'] = 'Poppins, Arial, sans-serif'
 
-        svg_node = soup.find('svg')
-        if svg_node:
-            svg_content = str(svg_node)
+        # 3. CRITICAL: Unwrap any nested <svg> tags inside the root <svg>
+        # PPT Master reserved nested <svg> strictly for picture-crop wrappers with a single <image> child.
+        root_svg = soup.find('svg')
+        if root_svg:
+            for nested in root_svg.find_all('svg'):
+                nested.unwrap()
+            svg_content = str(root_svg)
     except Exception:
         pass
 
